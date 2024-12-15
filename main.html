@@ -4,7 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tic Tac Toe</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .input-section {
+            display: block;
+        }
+
+        input {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .game-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .message {
+            margin: 20px 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 10px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .cell:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -36,6 +112,62 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        let player1, player2, currentPlayer, gameBoard, isGameOver;
+
+        document.getElementById("submit").addEventListener("click", function() {
+            player1 = document.getElementById("player-1").value;
+            player2 = document.getElementById("player-2").value;
+
+            if (player1 && player2) {
+                document.getElementById("input-section").style.display = "none";
+                document.getElementById("game-section").style.display = "block";
+                currentPlayer = player1;
+                gameBoard = Array(9).fill(null);
+                isGameOver = false;
+                updateMessage();
+            } else {
+                alert("Please enter both player names.");
+            }
+        });
+
+        function updateMessage() {
+            document.getElementById("message").textContent = `${currentPlayer}, you're up!`;
+        }
+
+        document.querySelectorAll(".cell").forEach(cell => {
+            cell.addEventListener("click", function() {
+                if (gameBoard[this.id - 1] || isGameOver) return; // If the cell is already filled or game is over
+
+                gameBoard[this.id - 1] = currentPlayer === player1 ? "X" : "O";
+                this.textContent = gameBoard[this.id - 1];
+
+                if (checkWinner()) {
+                    document.getElementById("message").textContent = `${currentPlayer} congratulations, you won!`;
+                    isGameOver = true;
+                } else {
+                    currentPlayer = currentPlayer === player1 ? player2 : player1;
+                    updateMessage();
+                }
+            });
+        });
+
+        function checkWinner() {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+                [0, 4, 8], [2, 4, 6]  // diagonals
+            ];
+
+            for (let pattern of winPatterns) {
+                const [a, b, c] = pattern;
+                if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    </script>
 </body>
 </html>
+
